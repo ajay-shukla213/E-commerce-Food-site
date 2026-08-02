@@ -21,9 +21,9 @@ const normalizeOrderItems = (items = []) =>
   items.map((item) => ({
     name: item.name || item.menuItem?.name || item.food?.name || 'Food Item',
     quantity: Number(item.quantity || 1),
-    image: item.image || item.imageUrl || item.menuItem?.image || '',
+    image: item.image || item.imageUrl || item.menuItem?.image || item.menuItem?.imageUrl || item.food?.image || item.food?.imageUrl || '',
     price: Number(item.price || item.unitPrice || 0),
-    food: item.food || item.menuItem || item._id || null,
+    food: item.food || item.menuItem?._id || item.menuItem || item._id || null,
   }));
 
 const formatOrderForClient = (order) => ({
@@ -74,12 +74,20 @@ export const addOrderItems = async (req, res) => {
     const taxPriceValue = Number(taxPrice || 0);
     const deliveryPriceValue = Number(deliveryPrice || 40);
     const totalPriceValue = Number(totalPrice || totalAmount || itemsPriceValue + taxPriceValue + deliveryPriceValue);
+    const selectedPaymentMethod = paymentMethod || 'COD';
+    const isPaidOrder = selectedPaymentMethod !== 'COD';
+    const paymentStatus = isPaidOrder ? 'Completed' : 'Pending';
+    const transactionId = isPaidOrder ? `TXN-${Date.now()}-${Math.floor(Math.random() * 1000)}` : '';
 
     const order = new Order({
       user: req.user._id,
       orderItems: normalizedItems,
       shippingAddress: normalizedShippingAddress,
-      paymentMethod: paymentMethod || 'COD',
+      paymentMethod: selectedPaymentMethod,
+      paymentStatus,
+      transactionId,
+      isPaid: isPaidOrder,
+      paidAt: isPaidOrder ? new Date() : null,
       itemsPrice: itemsPriceValue,
       taxPrice: taxPriceValue,
       deliveryPrice: deliveryPriceValue,

@@ -145,6 +145,10 @@ const MyOrders = () => {
                 <div className="text-sm space-y-1">
                   <p className="text-slate-300 font-medium leading-snug">{order.shippingAddress}</p>
                   <p className="text-xs text-slate-500">Payment Method: <span className="text-slate-300 font-semibold">{order.paymentMethod}</span></p>
+                  <p className="text-xs text-slate-500">Payment Status: <span className={order.paymentStatus === 'Completed' ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}>{order.paymentStatus || (order.isPaid ? 'Completed' : 'Pending')}</span></p>
+                  {order.transactionId && (
+                    <p className="text-xs text-slate-500">Txn ID: <span className="text-slate-300 font-semibold">{order.transactionId}</span></p>
+                  )}
                 </div>
               </div>
             </div>

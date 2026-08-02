@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { addToCart, removeFromCart, updateQuantity, clearCart } from '../store/cartSlice';
@@ -12,9 +13,9 @@ const Cart = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   const [address, setAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('COD');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [rzpLoaded, setRzpLoaded] = useState(false);
 
   const deliveryFee = cartItems.length > 0 ? 40 : 0;
   const grandTotal = totalAmount + deliveryFee;
@@ -26,6 +27,19 @@ const Cart = () => {
       dispatch(updateQuantity({ id: item._id, quantity: newQty }));
     }
   };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => setRzpLoaded(true);
+    script.onerror = () => setRzpLoaded(false);
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   const handleCheckout = async (e) => {
     e.preventDefault();
@@ -45,22 +59,80 @@ const Cart = () => {
       setError(null);
 
       const orderData = {
-        items: cartItems.map((item) => ({
-          menuItem: item._id,
+        orderItems: cartItems.map((item) => ({
+          name: item.name,
           quantity: item.quantity,
+          image: item.image || item.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c',
           price: item.price,
+          food: item.food || item._id,
         })),
-        totalAmount: grandTotal,
+        itemsPrice: totalAmount,
+        deliveryPrice: deliveryFee,
+        totalPrice: grandTotal,
         shippingAddress: address,
-        paymentMethod,
+        paymentMethod: 'UPI',
       };
 
-      await axiosClient.post('/orders', orderData);
-      dispatch(clearCart());
+      const { data } = await axiosClient.post('/payment/create-order', {
+        amount: grandTotal,
+        receipt: `order_${Date.now()}`,
+      });
+
+      if (!rzpLoaded || !window.Razorpay) {
+        await axiosClient.post('/orders', {
+          ...orderData,
+          paymentMethod: 'UPI',
+        });
+        dispatch(clearCart());
+        navigate('/my-orders');
+        return;
+      }
+
+      const options = {
+        key: data.order?.keyId || 'rzp_test_demo',
+        amount: data.order?.amount,
+        currency: data.order?.currency || 'INR',
+        name: 'BiteRush',
+        description: 'Food order payment',
+        order_id: data.order?.id,
+        handler: async (response) => {
+          try {
+            const verifyRes = await axiosClient.post('/payment/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            if (verifyRes.data?.success || verifyRes.data?.verified) {
+              await axiosClient.post('/orders', {
+                ...orderData,
+                paymentMethod: 'UPI',
+              });
+              dispatch(clearCart());
+              navigate('/my-orders');
+            } else {
+              setError('Payment verification failed.');
+            }
+          } catch (verifyErr) {
+            setError(verifyErr.message || 'Payment verification failed.');
+          } finally {
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: userInfo?.name || 'Customer',
+          email: userInfo?.email || '',
+        },
+        theme: {
+          color: '#f97316',
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
       setLoading(false);
-      navigate('/my-orders');
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Failed to place order');
+      setError(err.message || 'Failed to place order');
       setLoading(false);
     }
   };
@@ -179,16 +251,13 @@ const Cart = () => {
               </label>
               <div className="relative">
                 <CreditCard className="absolute left-3.5 top-3 h-5 w-5 text-slate-500" />
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-11 pr-4 text-slate-200 text-sm focus:outline-none focus:border-orange-500 transition-colors appearance-none cursor-pointer"
-                >
-                  <option value="COD">Cash on Delivery (COD)</option>
-                  <option value="UPI">UPI / Net Banking</option>
-                  <option value="CARD">Credit / Debit Card</option>
-                </select>
+                <div className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-11 pr-4 text-slate-200 text-sm">
+                  UPI / Online Payment
+                </div>
               </div>
+              <p className="text-xs text-slate-500 mt-2">
+                Payment will be completed through Razorpay when you confirm the order.
+              </p>
             </div>
 
             {/* Price Calculations */}
@@ -218,7 +287,7 @@ const Cart = () => {
                   <span>Placing Order...</span>
                 </>
               ) : (
-                <span>{userInfo ? 'Confirm Order' : 'Login to Checkout'}</span>
+                <span>{userInfo ? 'Pay & Place Order' : 'Login to Checkout'}</span>
               )}
             </button>
           </form>
