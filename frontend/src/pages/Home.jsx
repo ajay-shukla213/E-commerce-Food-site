@@ -18,7 +18,7 @@ const Home = () => {
         </h1>
 
         <p className="text-slate-400 text-lg max-w-2xl mx-auto leading-relaxed">
-          Explore gourmet cuisines, real-time live order tracking, and seamless cloud technology checkout.
+          Explore gourmet cuisines, real-time  live order tracking, and seamless cloud technology checkout.
         </p>
 
         <div className="pt-4 flex justify-center">
