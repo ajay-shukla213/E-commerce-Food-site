@@ -68,4 +68,6 @@ frontend/
 │
 ├── package.json
 └── vite.config.js
-- Lucide React<img width="1915" height="991" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/35c19a63-2026-4e87-98ef-2055435435c9" />
+- Lucide React
+-
+- <img width="1915" height="991" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/35c19a63-2026-4e87-98ef-2055435435c9" />
