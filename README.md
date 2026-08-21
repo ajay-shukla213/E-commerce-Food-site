@@ -1,4 +1,4 @@
-<img width="1915" height="991" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/80f910d6-70da-423f-9ad2-0cd014dd3db1" />
+
 
 
  🛠️ Frontend Tech Stack
@@ -437,7 +437,7 @@ The application includes a dynamic navigation bar that changes according to the 
 * Admin users can additionally access the **Admin Dashboard** and **Product Management** pages.
 * The logout process communicates with the backend and clears the user's authentication state.
 
-### Cart Item Counter
+  Cart Item Counter
 
 ```jsx
 const totalCartCount = cartItems.reduce(
@@ -458,7 +458,7 @@ This dynamically displays the total number of food items currently added to the 
 
 Admin-specific navigation options are displayed only when the logged-in user has the `admin` role.
 
-### 🍔 Food Product Display & Cart Integration
+ 🍔 Food Product Display & Cart Integration
 
 Each food item is displayed using a reusable `FoodCard` component.
 
@@ -486,6 +486,9 @@ const handleAddToCart = () => {
 ```
 
 The selected food item is added to the Redux cart state, and the user receives visual feedback after successfully adding the item.
+
+
+
 
 
 
@@ -549,6 +552,10 @@ The page uses:
 
 The Home page acts as the main entry point of the application and encourages users to explore the menu and use the food ordering features.
 
+🏠 Home
+<img width="1915" height="991" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/80f910d6-70da-423f-9ad2-0cd014dd3db1" />
+
+
 
 ### 🛒 Shopping Cart & Checkout
 
@@ -582,6 +589,9 @@ const handleQuantityChange = (item, newQty) => {
   }
 };
 ```
+
+🛒 Shopping Cart & Checkout
+<img width="1917" height="998" alt="Screenshot (4)" src="https://github.com/user-attachments/assets/90735868-57ee-44b6-b238-8f82eeae6ea6" />
 
 ### 💰 Order Summary
 
@@ -1381,6 +1391,10 @@ Protected Routes
 User Profile Access
 ```
 
+🔐 Login / Authentication
+<img width="1912" height="982" alt="Screenshot (6)" src="https://github.com/user-attachments/assets/4340b1f2-9071-44d1-8320-7447aea6baae" />
+
+
 
 ## 🍽️ Food Management System
 
@@ -1465,7 +1479,7 @@ await food.deleteOne();
 DELETE /api/food/:id
 ```
 
-### 🔒 Access Control
+ 🔒 Access Control
 
 | Feature | Access |
 |---|---|
@@ -1561,7 +1575,7 @@ Orders are sorted with the newest orders displayed first.
 
 ---
 
-### 👨‍💼 Admin Order Management
+ 👨‍💼 Admin Order Management
 
 Administrators can access all orders and view customer information.
 
@@ -1606,6 +1620,13 @@ if (!allowedStatus.includes(status)) {
 
 ---
 
+
+👨‍💼Admin Dashboard & Order Management
+<img width="1920" height="998" alt="Screenshot (7)" src="https://github.com/user-attachments/assets/26db7af5-af26-4098-8e25-fda8ddc4edf0" />
+
+
+
+
 ### ⚡ Real-Time Order Updates
 
 When an admin changes the order status, the update is sent to the specific customer using Socket.IO.
@@ -1619,6 +1640,11 @@ io.to(order.user.toString()).emit(
   }
 );
 ```
+
+🍔 Admin Product Panel
+
+<img width="1918" height="964" alt="Screenshot (8)" src="https://github.com/user-attachments/assets/b841894f-a3a4-4bfc-a4e5-83b8d56f21e7" />
+
 
 This allows customers to receive real-time updates about their order progress.
 
@@ -1809,7 +1835,7 @@ Razorpay Credentials Missing
 
 ---
 
-### 🔑 Environment Variables
+ 🔑 Environment Variables
 
 Razorpay credentials are stored securely using environment variables:
 
@@ -1850,6 +1876,11 @@ Backend Verifies Signature
    ↓
 Payment Confirmed
 ```
+
+📦 My Orders & Order Tracking ← ye last mein
+
+<img width="1920" height="982" alt="Screenshot (9)" src="https://github.com/user-attachments/assets/7f377e04-f646-438a-ae8d-e7bd5c93a7f4" />
+
 
 
 ## 📂 Backend Project Structure
@@ -1926,5 +1957,11 @@ backend/
  📜 Available Backend Scripts
 
  ▶️ Run Backend Locally
+
+
+
+
+
+
 
 
