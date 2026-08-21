@@ -1,3 +1,6 @@
+<img width="1915" height="991" alt="Screenshot (2)" src="https://github.com/user-attachments/assets/80f910d6-70da-423f-9ad2-0cd014dd3db1" />
+
+
  🛠️ Frontend Tech Stack
 
 The frontend of this E-Commerce Food Ordering Website is built using modern React technologies.
